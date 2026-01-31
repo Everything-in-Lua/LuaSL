@@ -1,0 +1,45 @@
+{
+  "name": "luasl",
+  "displayName": "LuaSL",
+  "description": "Syntax highlighting and snippets for LuaSL shader language.",
+  "version": "0.1.0",
+  "publisher": "luasl",
+  "main": "./extension.js",
+  "activationEvents": [
+    "onLanguage:luasl"
+  ],
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "luasl",
+        "aliases": [
+          "LuaSL",
+          "LuaSL"
+        ],
+        "extensions": [
+          ".luasl"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "luasl",
+        "scopeName": "source.luasl",
+        "path": "./syntaxes/luasl.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "luasl",
+        "path": "./snippets/luasl.json"
+      }
+    ]
+  }
+}

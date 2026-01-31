@@ -1,0 +1,72 @@
+{
+  "Fragment Entry": {
+    "prefix": "fragment",
+    "body": [
+      "@fragment",
+      "function main(uv: vec2, time: float): vec4",
+      "    $0",
+      "end"
+    ],
+    "description": "Fragment shader entry point"
+  },
+  "Vertex Entry": {
+    "prefix": "vertex",
+    "body": [
+      "@vertex",
+      "function main(pos: vec3, time: float): vec4",
+      "    $0",
+      "end"
+    ],
+    "description": "Vertex shader entry point"
+  },
+  "Let Binding": {
+    "prefix": "let",
+    "body": [
+      "let ${1:name}: ${2:float} = ${3:value}"
+    ],
+    "description": "Immutable binding"
+  },
+  "Var Binding": {
+    "prefix": "var",
+    "body": [
+      "var ${1:name}: ${2:float} = ${3:value}"
+    ],
+    "description": "Mutable binding"
+  },
+  "Function": {
+    "prefix": "function",
+    "body": [
+      "function ${1:name}(${2:arg}: ${3:type}): ${4:returnType}",
+      "    $0",
+      "end"
+    ],
+    "description": "Function declaration"
+  },
+  "If": {
+    "prefix": "if",
+    "body": [
+      "if ${1:condition} then",
+      "    $0",
+      "end"
+    ],
+    "description": "If statement"
+  },
+  "For": {
+    "prefix": "for",
+    "body": [
+      "for ${1:i}: int = ${2:0}, ${3:10} do",
+      "    $0",
+      "end"
+    ],
+    "description": "For loop"
+  },
+  "Struct": {
+    "prefix": "struct",
+    "body": [
+      "struct ${1:Name}",
+      "    ${2:field}: ${3:type}",
+      "end"
+    ],
+    "description": "Struct declaration"
+  }
+}

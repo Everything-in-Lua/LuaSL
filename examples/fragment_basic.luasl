@@ -1,0 +1,5 @@
+@fragment
+function main(uv: vec2, time: float): vec4
+    let c: float = sin(uv.x * 10.0 + time)
+    return vec4(c, c, c, 1.0)
+end

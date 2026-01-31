@@ -1,0 +1,70 @@
+{
+  "name": "LuaSL",
+  "scopeName": "source.luasl",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#annotations" },
+    { "include": "#keywords" },
+    { "include": "#types" },
+    { "include": "#builtins" },
+    { "include": "#numbers" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-dash.luasl",
+          "match": "--.*$"
+        }
+      ]
+    },
+    "annotations": {
+      "patterns": [
+        {
+          "name": "storage.type.annotation.luasl",
+          "match": "@[A-Za-z_][A-Za-z0-9_]*"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.luasl",
+          "match": "\\b(let|var|function|return|struct|for|do|if|then|else|end|and|or)\\b"
+        },
+        {
+          "name": "constant.language.boolean.luasl",
+          "match": "\\b(true|false)\\b"
+        }
+      ]
+    },
+    "types": {
+      "patterns": [
+        {
+          "name": "storage.type.luasl",
+          "match": "\\b(float|int|bool|vec[234]|mat[234])\\b"
+        }
+      ]
+    },
+    "builtins": {
+      "patterns": [
+        {
+          "name": "support.function.builtin.luasl",
+          "match": "\\b(sin|cos|tan|dot|normalize|length|mix|clamp|smoothstep|vec2|vec3|vec4)\\b"
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.float.luasl",
+          "match": "\\b\\d+\\.\\d+\\b|\\b\\d+\\.\\b|\\b\\.\\d+\\b"
+        },
+        {
+          "name": "constant.numeric.integer.luasl",
+          "match": "\\b\\d+\\b"
+        }
+      ]
+    }
+  }
+}

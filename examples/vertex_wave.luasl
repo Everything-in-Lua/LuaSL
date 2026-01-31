@@ -1,0 +1,6 @@
+@vertex
+function main(pos: vec3, time: float): vec4
+    let offset: float = sin(pos.x * 2.0 + time)
+    let displaced: vec3 = vec3(pos.x, pos.y + offset * 0.1, pos.z)
+    return vec4(displaced.x, displaced.y, displaced.z, 1.0)
+end

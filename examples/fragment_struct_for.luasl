@@ -1,0 +1,35 @@
+struct Wave
+    freq: float
+    speed: float
+    amp: float
+end
+
+function wave_at(w: Wave, p: vec2, time: float): float
+    let phase: float = time * w.speed
+    return sin(length(p) * w.freq - phase) * w.amp
+end
+
+@fragment
+function main(uv: vec2, time: float): vec4
+    var p: vec2 = uv * 2.0 - vec2(1.0, 1.0)
+    var acc: float = 0.0
+
+    for i: int = 0, 2 do
+        var w: Wave = Wave(0.0, 0.0, 0.0)
+        if i == 0 then
+            w = Wave(5.0, 1.2, 0.25)
+        else
+            if i == 1 then
+                w = Wave(8.0, 0.7, 0.18)
+            else
+                w = Wave(12.0, 1.5, 0.12)
+            end
+        end
+        acc = acc + wave_at(w, p, time)
+    end
+
+    var t: float = clamp(acc * 0.5 + 0.5, 0.0, 1.0)
+    var base: vec3 = mix(vec3(0.05, 0.2, 0.45), vec3(0.9, 0.6, 0.2), t)
+    var vignette: float = clamp(1.0 - length(p), 0.0, 1.0)
+    return vec4(base.x * vignette, base.y * vignette, base.z * vignette, 1.0)
+end
