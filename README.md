@@ -9,6 +9,7 @@ Build shaders:
 luasl build examples/fragment_basic.luasl
 luasl build examples/*.luasl -o build/shaders
 luasl build examples/fragment_basic.luasl --stage fragment
+luasl build shader.luasl --target minecraft
 ```
 
 Type check only:

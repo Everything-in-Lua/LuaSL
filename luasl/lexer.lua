@@ -4,6 +4,10 @@ local KEYWORDS = {
   ["function"] = true,
   ["return"] = true,
   ["struct"] = true,
+  ["uniform"] = true,
+  ["in"] = true,
+  ["out"] = true,
+  ["extern"] = true,
   ["if"] = true,
   ["then"] = true,
   ["else"] = true,
@@ -26,6 +30,8 @@ local TYPES = {
   ["mat2"] = true,
   ["mat3"] = true,
   ["mat4"] = true,
+  ["sampler2D"] = true,
+  ["void"] = true,
 }
 
 local function token(kind, value, line, col)
@@ -168,7 +174,18 @@ local function Lexer(src)
         table.insert(out, token("EOF", "", self.line, self.col))
         return out
       end
-      if ch:match("[%s]") then
+      if ch == "#" then
+        local line, col = self.line, self.col
+        local s = {}
+        while true do
+          local c = peek()
+          if c == "\n" or c == "\0" then
+            break
+          end
+          table.insert(s, advance())
+        end
+        table.insert(out, token("PREPROC", table.concat(s), line, col))
+      elseif ch:match("[%s]") then
         advance()
       elseif ch == "-" and peek_ahead(1) == "-" then
         skip_line_comment()

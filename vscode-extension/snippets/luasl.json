@@ -68,5 +68,12 @@
       "end"
     ],
     "description": "Struct declaration"
+  },
+  "Uniform": {
+    "prefix": "uniform",
+    "body": [
+      "uniform ${1:name}: ${2:sampler2D}"
+    ],
+    "description": "Uniform declaration"
   }
 }

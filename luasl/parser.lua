@@ -217,6 +217,10 @@ local function Parser(tokens)
     end
     if tok.kind == "RETURN" then
       advance()
+      local next = peek().kind
+      if next == "END" or next == "ELSE" or next == "EOF" then
+        return { tag = "Return", value = nil }
+      end
       return { tag = "Return", value = parse_expression() }
     end
     if tok.kind == "IDENT" and peek_ahead(1).kind == "=" then
@@ -276,6 +280,14 @@ local function Parser(tokens)
     ParseError("Unexpected token " .. tok.kind .. " at " .. tok.line .. ":" .. tok.col)
   end
 
+  local function parse_global_decl()
+    local qualifier = advance().value
+    local name = expect("IDENT", "Expected global name").value
+    expect(":", "Expected ':' after global name")
+    local type_name = parse_type_name("global")
+    return { tag = "Global", qualifier = qualifier, name = name, type_name = type_name }
+  end
+
   local function parse_function()
     local annotations = {}
     while peek().kind == "ANNOT" do
@@ -319,14 +331,20 @@ local function Parser(tokens)
   local function parse_program()
     local functions = {}
     local structs = {}
+    local globals = {}
+    local preproc = {}
     while peek().kind ~= "EOF" do
-      if peek().kind == "STRUCT" then
+      if peek().kind == "PREPROC" then
+        table.insert(preproc, advance().value)
+      elseif peek().kind == "STRUCT" then
         table.insert(structs, parse_struct())
+      elseif peek().kind == "UNIFORM" or peek().kind == "IN" or peek().kind == "OUT" or peek().kind == "EXTERN" then
+        table.insert(globals, parse_global_decl())
       else
         table.insert(functions, parse_function())
       end
     end
-    return { tag = "Program", structs = structs, functions = functions }
+    return { tag = "Program", preproc = preproc, globals = globals, structs = structs, functions = functions }
   end
 
   return {

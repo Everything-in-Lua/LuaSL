@@ -127,7 +127,7 @@ end
 
 local function usage()
   print([[
-luasl build <files...> [-o <out>] [--stage <fragment|vertex>]
+luasl build <files...> [-o <out>] [--stage <fragment|vertex>] [--target <glsl|minecraft>]
 luasl check <files...> [--stage <fragment|vertex>]
 luasl --version
 ]])
@@ -139,6 +139,7 @@ local function parse_args(argv)
     inputs = {},
     out = nil,
     stage = nil,
+    target = "glsl",
   }
 
   local i = 1
@@ -158,6 +159,9 @@ local function parse_args(argv)
       i = i + 2
     elseif arg == "--stage" then
       out.stage = argv[i + 1]
+      i = i + 2
+    elseif arg == "--target" then
+      out.target = argv[i + 1]
       i = i + 2
     else
       table.insert(out.inputs, arg)
@@ -196,6 +200,10 @@ local function cmd_build(opts)
     usage()
     return 1
   end
+  if opts.target ~= "glsl" and opts.target ~= "minecraft" then
+    eprintln("Invalid --target value: " .. tostring(opts.target))
+    return 1
+  end
   local inputs = collect_inputs(opts.inputs)
   if #inputs == 0 then
     eprintln("No input files")
@@ -210,7 +218,7 @@ local function cmd_build(opts)
       return 1
     end
     local ok, glsl_or_err, program = pcall(function()
-      local glsl, prog = compiler.compile(src)
+      local glsl, prog = compiler.compile(src, { target = opts.target })
       return glsl, prog
     end)
     if not ok then

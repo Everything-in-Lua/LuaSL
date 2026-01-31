@@ -6,6 +6,10 @@ const KEYWORDS = [
   "function",
   "return",
   "struct",
+  "uniform",
+  "in",
+  "out",
+  "extern",
   "for",
   "do",
   "end",
@@ -28,6 +32,8 @@ const TYPES = [
   "mat2",
   "mat3",
   "mat4",
+  "sampler2D",
+  "void",
 ];
 
 const BUILTINS = [
@@ -37,9 +43,11 @@ const BUILTINS = [
   "dot",
   "normalize",
   "length",
+  "fract",
   "mix",
   "clamp",
   "smoothstep",
+  "texture",
   "vec2",
   "vec3",
   "vec4",

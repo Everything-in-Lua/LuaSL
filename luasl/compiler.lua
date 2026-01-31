@@ -15,10 +15,10 @@ local function check(program)
   checker.check()
 end
 
-local function compile(source)
+local function compile(source, opts)
   local program = parse(source)
   check(program)
-  local gen = glsl.GLSLGen(program)
+  local gen = glsl.GLSLGen(program, opts)
   return gen.emit(), program
 end
 

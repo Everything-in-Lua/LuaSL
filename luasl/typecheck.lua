@@ -7,6 +7,7 @@ local function TypeChecker(program)
     program = program,
     funcs = {},
     structs = {},
+    globals = {},
     current_func = nil,
   }
 
@@ -55,7 +56,7 @@ local function TypeChecker(program)
       return expr.name
     end
 
-    if expr.name == "sin" or expr.name == "cos" or expr.name == "tan" or expr.name == "length" then
+    if expr.name == "sin" or expr.name == "cos" or expr.name == "tan" or expr.name == "length" or expr.name == "fract" then
       expect_argc(expr, 1)
       local t = check_expr(expr.args[1], scope)
       if t == "float" or t == "vec2" or t == "vec3" or t == "vec4" then
@@ -96,6 +97,15 @@ local function TypeChecker(program)
       end
       TypeError(expr.name .. " expects (T, T, float)")
     end
+    if expr.name == "texture" then
+      expect_argc(expr, 2)
+      local s = check_expr(expr.args[1], scope)
+      local uv = check_expr(expr.args[2], scope)
+      if s == "sampler2D" and uv == "vec2" then
+        return "vec4"
+      end
+      TypeError("texture expects (sampler2D, vec2)")
+    end
 
     local sig = self.funcs[expr.name]
     if not sig then
@@ -116,7 +126,7 @@ local function TypeChecker(program)
   end
 
   local function is_known_type(t)
-    if t == "float" or t == "int" or t == "bool" or t == "vec2" or t == "vec3" or t == "vec4" or t == "mat2" or t == "mat3" or t == "mat4" then
+    if t == "float" or t == "int" or t == "bool" or t == "vec2" or t == "vec3" or t == "vec4" or t == "mat2" or t == "mat3" or t == "mat4" or t == "sampler2D" or t == "void" then
       return true
     end
     return self.structs[t] ~= nil
@@ -139,6 +149,10 @@ local function TypeChecker(program)
     if expr.tag == "Var" then
       local t = scope[expr.name]
       if not t then
+        local gt = self.globals[expr.name]
+        if gt then
+          return gt
+        end
         TypeError("Undefined variable " .. expr.name)
       end
       return t
@@ -188,7 +202,7 @@ local function TypeChecker(program)
     if expr.tag == "Member" then
       local base_t = check_expr(expr.base, scope)
       if base_t == "vec2" or base_t == "vec3" or base_t == "vec4" then
-        if expr.name:match("^[xyzw]+$") and #expr.name >= 1 and #expr.name <= 4 then
+        if expr.name:match("^[xyzwrgba]+$") and #expr.name >= 1 and #expr.name <= 4 then
           if #expr.name == 1 then
             return "float"
           end
@@ -231,14 +245,24 @@ local function TypeChecker(program)
       return
     end
     if stmt.tag == "Assign" then
-      if not scope[stmt.name] then
+      local target_t = scope[stmt.name] or self.globals[stmt.name]
+      if not target_t then
         TypeError("Undefined variable " .. stmt.name)
       end
       local expr_t = check_expr(stmt.value, scope)
-      expect_type(scope[stmt.name], expr_t, "Type mismatch in assignment to " .. stmt.name)
+      expect_type(target_t, expr_t, "Type mismatch in assignment to " .. stmt.name)
       return
     end
     if stmt.tag == "Return" then
+      if ret_type == "void" then
+        if stmt.value ~= nil then
+          TypeError("Return with value in void function")
+        end
+        return
+      end
+      if stmt.value == nil then
+        TypeError("Return value required")
+      end
       local expr_t = check_expr(stmt.value, scope)
       expect_type(ret_type, expr_t, "Return type mismatch")
       return
@@ -290,6 +314,9 @@ local function TypeChecker(program)
   local function check_function(fn)
     self.current_func = fn.name
     local scope = {}
+    for name, t in pairs(self.globals) do
+      scope[name] = t
+    end
     for i = 1, #fn.params do
       local p = fn.params[i]
       if scope[p.name] then
@@ -327,6 +354,16 @@ local function TypeChecker(program)
           TypeError("Unknown type " .. f.type_name .. " in struct " .. st.name)
         end
       end
+    end
+    for i = 1, #self.program.globals do
+      local g = self.program.globals[i]
+      if not is_known_type(g.type_name) then
+        TypeError("Unknown type " .. g.type_name .. " for global " .. g.name)
+      end
+      if self.globals[g.name] then
+        TypeError("Duplicate global " .. g.name)
+      end
+      self.globals[g.name] = g.type_name
     end
     for i = 1, #self.program.functions do
       local fn = self.program.functions[i]
