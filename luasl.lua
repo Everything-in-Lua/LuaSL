@@ -1,5 +1,3 @@
--- CLI entrypoint for Luau-SL compiler
-
 local sep = package.config:sub(1, 1)
 local script = (arg and arg[0]) or ""
 local dir = script:match("^(.*" .. sep .. ")")
